@@ -1,0 +1,251 @@
+newFunc() async {
+  final AuthorizationTokenResponse? result = await appAuth.authorizeAndExchangeCode(
+    AuthorizationTokenRequest(
+      '51f81489-12ee-4a9e-aaae-a2591f45987d',
+      'msauth://com.example.rentready/1Mo5eFzIfXQB4hJc3dgT6YB558w%3D',
+      discoveryUrl: 'https://org87a65d71.api.crm4.dynamics.com/',
+      scopes: ['openid','profile', 'email', 'offline_access', 'api'],
+    ),
+  );
+}
+
+
+-----------------------------------
+  void getHttp() async {
+    Map<String, dynamic> headers2 = {
+      "client_id" : "b86baeda-df0c-4830-95d6-f45748930e3e",
+      "authorization_user_agent" : "DEFAULT",
+      "redirect_uri" : "msauth://com.example.rentready/1Mo5eFzIfXQB4hJc3dgT6YB558w%3D",
+      "authorities" : [
+        {
+          "type": "AAD",
+          "audience": {
+            "type": "AzureADandPersonalMicrosoftAccount",
+            "tenant_id": "common"
+          }
+        }
+      ]
+    };
+    Map<String, dynamic> headers = {
+      "url": "https://org87a65d71.api.crm4.dynamics.com/",
+      "clientid": "51f81489-12ee-4a9e-aaae-a2591f45987d",
+      "version": "9.2",
+      "webapiurl": "{{url}}/api/data/v{{version}}/",
+      "callback": "https://callbackurl",
+      "authurl": "https://login.microsoftonline.com/common/oauth2/authorize?resource={{url}}",
+
+      "authorization": token
+    };
+    // Dio dio = Dio();
+    // dio.options.headers['content-Type'] = headers;
+    // dio.options.headers["authorization"] = "Bearer $token";
+
+    try {
+      // await Dio().get('token',options: Options(
+      //     headers: headers
+      // )).then((value) {
+      //   print("value $value");
+      // });
+        response = await Dio().get(url,options: Options(
+        headers: headers
+      ));
+      Map apiResponse = response.data;
+      for(int i=0;i<apiResponse["value"].length;i++){
+        mapTest.add({
+          "image":apiResponse["value"][i]["cr628_image"],
+          "title":apiResponse["value"][i]["cr628_title"],
+          "description":apiResponse["value"][i]["cr628_description"],
+          "state":apiResponse["value"][i]["cr628_state"],
+          "accountNumber":apiResponse["value"][i]["cr628_accountnumber"],
+          "owner":apiResponse["value"][i]["cr628_name"],
+          "stateCode":apiResponse["value"][i]["cr628_statenumber"],
+        }
+        );
+        print(mapTest);
+      }
+    } catch (e) {
+      print("i'm in catch");
+        print("i'm here how are you? $e");
+        // response.data;
+        // var dio = Dio();
+        // //  dio instance to request token
+        // var tokenDio = Dio();
+        // String? csrfToken;
+        // dio.options.baseUrl = 'https://org87a65d71.api.crm4.dynamics.com/';
+        // tokenDio.options = dio.options;
+        // dio.interceptors.add(QueuedInterceptorsWrapper(
+        //   onRequest: (options, handler) {
+        //     print('send request：path:${options.path}，baseURL:${options.baseUrl}');
+        //     print('no token，request token firstly...');
+        //     tokenDio.get('/token').then((d) {
+        //       options.headers['csrfToken'] = csrfToken = d.data['data']['token'];
+        //       print('request token succeed, value: ' + d.data['data']['token']);
+        //       print('continue to perform request：path:${options.path}，baseURL:${options.path}');
+        //       handler.next(options);
+        //     }).catchError((error, stackTrace) {
+        //       handler.reject(error, true);
+        //     });
+        //
+        //   },
+        // ));
+
+
+
+
+        // var dio = Dio();
+        // final response = http.post(Uri.https("", '/api/[YourAuthorizationEndpoint]'),
+        //     headers: {'grant_type': 'refresh_token', 'refresh_token': '$refresh_token'});
+        // token = jsonDecode(response.body)['token'];
+        // refresh_token = jsonDecode(response.body)['refresh_token'];
+        // return getUser();
+
+      //debugPrint(e.toString());
+    }
+  }
+  --------------------------------------
+    Future<Null> getData() async {
+      http.post(Uri.parse(url), body:{
+        'grant_type': 'implicit',
+        "callback": "https://callbackurl",
+        "authurl": "https://login.microsoftonline.com/common/oauth2/authorize?resource={{url}}",
+        'client_id': '51f81489-12ee-4a9e-aaae-a2591f45987d',
+        "authorization":"",
+      }).then((response){
+        print("Response Status: ${response.statusCode}");
+        print("Response Body: ${response.body}");
+      });
+    }
+    Future<void> getToken() async {
+        // http.post(Uri.parse(url), body:{
+        //   "url": "https://org87a65d71.api.crm4.dynamics.com/",
+        //   "clientid": "51f81489-12ee-4a9e-aaae-a2591f45987d",
+        //   "version": "9.2",
+        //   "webapiurl": "{{url}}/api/data/v{{version}}/",
+        //   "callback": "https://callbackurl",
+        //   "authurl": "https://login.microsoftonline.com/common/oauth2/authorize?resource={{url}}",
+
+        // }).then((response){
+        //   print("Response Status: ${response.statusCode}");
+        //   print("Response Body: ${response.body}");
+        // });
+
+
+
+         var request = http.MultipartRequest(
+            'POST', Uri.parse(url));
+        request.fields.addAll({
+          'grant_type': 'implicit',
+          "callback": "https://callbackurl",
+          "authurl": "https://login.microsoftonline.com/common/oauth2/authorize?resource={{url}}",
+          'client_id': '51f81489-12ee-4a9e-aaae-a2591f45987d',
+        });
+
+         http.StreamedResponse response = await request.send();
+
+         if (response.statusCode == 200) {
+           Map<String, dynamic> auth =
+           jsonDecode(await response.stream.bytesToString());
+
+           return auth['access_token'];
+         } else {
+           print(response.statusCode);
+         }
+
+    }
+
+      /*
+      com.example.rentreadyandroid:host="com.example.rentready"{
+      "client_id" : "b86baeda-df0c-4830-95d6-f45748930e3e",
+      "authorization_user_agent" : "DEFAULT",
+      "redirect_uri" : "msauth://com.example.rentready/1Mo5eFzIfXQB4hJc3dgT6YB558w%3D",
+      "authorities" : [
+        {
+          "type": "AAD",
+          "audience": {
+            "type": "AzureADandPersonalMicrosoftAccount",
+            "tenant_id": "common"
+          }
+        }
+      ]
+    }
+       */
+       
+       
+       //  getHttpData() async {
+       //
+       //  Map<String, dynamic> headers = {
+       //   "url": "https://org87a65d71.api.crm4.dynamics.com/",
+       //   "clientid": "51f81489-12ee-4a9e-aaae-a2591f45987d",
+       //   "version": "9.2",
+       //   "webapiurl": "{{url}}/api/data/v{{version}}/",
+       //   "callback": "https://callbackurl",
+       //   "authurl": "https://login.microsoftonline.com/common/oauth2/authorize?resource={{url}}",
+
+       //   "authorization": token
+       //  };
+       //
+       //  try {
+       //   response = await Dio().get(url,options: Options(
+       //       headers: headers
+       //   ));
+       //   Map apiResponse = response.data;
+       //   for(int i=0;i<apiResponse["value"].length;i++){
+       //    temp.add({
+       //     "image":apiResponse["value"][i]["cr628_image"],
+       //     "title":apiResponse["value"][i]["cr628_title"],
+       //     "description":apiResponse["value"][i]["cr628_description"],
+       //     "state":apiResponse["value"][i]["cr628_state"],
+       //     "accountNumber":apiResponse["value"][i]["cr628_accountnumber"],
+       //     "owner":apiResponse["value"][i]["cr628_name"],
+       //     "stateCode":apiResponse["value"][i]["cr628_statenumber"],
+       //    }
+       //    );
+       //   }
+       //   print(temp);
+       //   temp=temp.isEmpty? dbData:temp;
+       //   isDataLoading=false;
+       //   return temp;
+       //
+       //  } catch (e) {
+       //   debugPrint(e.toString());
+       //  }
+       // }
+
+       ----------------------
+         // await refreshToken();
+
+           //final response = await api.post('/auth/refresh', data: {'refreshToken': refreshToken});
+           // var data = <String, dynamic>{
+           //   "grant_type": "refresh_token",
+           //   "refresh_token": apiToken,
+           //   'email': "NourEddin.Hammoda@fireideas.com"
+           // };
+           // response = await api
+           //     .post("https://login.microsoftonline.com/common/v2.0/oauth2/token", data: data);
+           // print(response.data);
+           ------------------
+           FlutterAppAuth appAuth = FlutterAppAuth();
+             // static const snackBar = SnackBar(
+             //   content: Text("you can't take token from unauthorized application"),
+             //   duration: const Duration(seconds: 3),
+             // );
+
+
+
+             --------------------------------
+              final Dio api = Dio();
+               final oauth = OAuth(
+                   tokenUrl: 'https://login.microsoftonline.com/common/oauth2/authorize?resource=https://org87a65d71.api.crm4.dynamics.com/',
+                   clientId: '51f81489-12ee-4a9e-aaae-a2591f45987d',
+                   clientSecret: 'SB-7Q~mTw3GumeA1v9lMmm43nTUeBZW5JHSFe');
+
+             refreshToken() async {
+               var token =  oauth.requestToken(
+                   RefreshTokenGrant(
+                       refreshToken: apiToken
+                   )
+               ).then((token) {
+                 print(token);
+                 return token;
+               });
+             }
