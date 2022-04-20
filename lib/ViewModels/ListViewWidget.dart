@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'CardWidget.dart';
+import '../Providers_DataManager/RealEstate_provider.dart';
+import '../Providers_DataManager/RealEstate_provider.dart';
+import '../Screens/AddData.dart';
+import '../Widgets/CardWidget.dart';
 
 class ListViewWdiget extends StatefulWidget {
   List <Map> data;
@@ -21,7 +25,8 @@ class _ListViewWdigetState extends State<ListViewWdiget> {
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, index){
           return card(widget.data[index]["image"],widget.data[index]["title"],widget.data[index]["description"]
-              ,widget.data[index]["owner"],widget.data[index]["accountNumber"],widget.data[index]["state"],widget.data[index]["stateCode"]);
+              ,widget.data[index]["owner"],widget.data[index]["accountNumber"],widget.data[index]["state"],
+              widget.data[index]["stateCode"],widget.data[index]["key"],index);
            // Container(color:Colors.red,child: Text("data"));
             //CardWidget( true);
         }, separatorBuilder: (BuildContext context, int index) {
@@ -35,7 +40,7 @@ class _ListViewWdigetState extends State<ListViewWdiget> {
       ),
     );
   }
-  Widget card(String image,String title,String description,String owner,String accountNumber,String state,String stateCode){
+  Widget card(String image,String title,String description,String owner,String accountNumber,String state,String stateCode,String key,int index){
     double height=MediaQuery.of(context).size.height;
     double width=MediaQuery.of(context).size.width;
     return InkWell(
@@ -44,7 +49,7 @@ class _ListViewWdigetState extends State<ListViewWdiget> {
       },
       child: Container(
         width: double.infinity,
-        height: height*0.13,
+        height: height*0.18,
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
@@ -61,30 +66,44 @@ class _ListViewWdigetState extends State<ListViewWdiget> {
          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(child: ClipRRect( borderRadius: BorderRadius.circular(15),child: Image.network(image))),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(title,softWrap: true,),
+                Container(width:width*0.35,child: ClipRRect( borderRadius: BorderRadius.circular(15),child: Image.network(image))),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children:[
                     Container(
+                      alignment: Alignment.centerRight,
                       width: width*0.5,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(title),
-                          Text("$owner/${accountNumber.toString()}"),
-                        ],
-                      ),
+                      child: Text("$owner/${accountNumber.toString()}"),
                     )
                     ,Text(description)
                     ,Container(
-                      width: width*0.5,
+                      width: width*0.55,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(state),
-                          Text("Code: ${stateCode.toString()}"),
+                          Text(" ${stateCode.toString()}"),
+                          Spacer(),
+                          IconButton(onPressed: (){
+                            Provider.of<RealEstate>(context, listen: false).deleteData(index,key);
+
+                          }, icon: Icon(Icons.delete)),
+                          IconButton(onPressed: (){
+                            print(index);
+                            Navigator.of(context).push( MaterialPageRoute(
+                                builder: (ctx) =>  AddData( true,index: index,title: title,description: description,
+                                  state: state,stateCode: stateCode,image: image,
+                                  owner: owner,accountNumber: accountNumber,dataKey: key,
+                                )));
+                          }, icon: Icon(Icons.edit)),
 
 
                         ],

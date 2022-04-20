@@ -1,8 +1,9 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:rentready/DataManger/RealEstate_provider.dart';
-import 'package:rentready/HomePage.dart';
+import 'package:rentready/Providers_DataManager/RealEstate_provider.dart';
+
+import 'package:rentready/Screens/HomePage.dart';
 
 class MockRealEsate extends  Mock implements RealEstate{}
 

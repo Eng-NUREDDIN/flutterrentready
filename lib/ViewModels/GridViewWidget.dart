@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rentready/Widgets/CardWidget.dart';
+
+import '../Providers_DataManager/RealEstate_provider.dart';
+import '../Screens/AddData.dart';
 
 class GridViewWidget extends StatefulWidget {
   List<Map> data;
@@ -23,11 +27,12 @@ class _GridViewWidgetState extends State<GridViewWidget> {
           itemCount: widget.data.length,
       itemBuilder: (BuildContext context, index){
         return  card(widget.data[index]["image"],widget.data[index]["title"],widget.data[index]["description"]
-            ,widget.data[index]["owner"],widget.data[index]["accountNumber"],widget.data[index]["state"],widget.data[index]["stateCode"]);
+            ,widget.data[index]["owner"],widget.data[index]["accountNumber"],
+            widget.data[index]["state"],widget.data[index]["stateCode"],widget.data[index]["key"],index);
       }),
     );
   }
-  Widget card(String image,String title,String description,String owner,String accountNumber,String state,String stateCode){
+  Widget card(String image,String title,String description,String owner,String accountNumber,String state,String stateCode,String key,int index){
     double height=MediaQuery.of(context).size.height;
     double width=MediaQuery.of(context).size.width;
     return InkWell(
@@ -59,7 +64,25 @@ class _GridViewWidgetState extends State<GridViewWidget> {
             ),
             textWithBackground(title)
             ,textWithBackground(description),
-            textWithBackground(stateCode.toString())
+            Row(
+              children: [
+                textWithBackground(stateCode.toString()),
+                Spacer(),
+                IconButton(onPressed: (){
+                  Provider.of<RealEstate>(context, listen: false).deleteData(index,key);
+
+                }, icon: Icon(Icons.delete,color: Colors.white)),
+                IconButton(onPressed: (){
+
+                  Navigator.of(context).push( MaterialPageRoute(
+                      builder: (ctx) =>  AddData( true,index: index,title: title,description: description,
+                        state: state,stateCode: stateCode,image: image,
+                        owner: owner,accountNumber: accountNumber,dataKey: key,
+                      )));
+                }, icon: Icon(Icons.edit,color: Colors.white,)),
+
+              ],
+            )
           ],
         ),
       ),
@@ -67,8 +90,9 @@ class _GridViewWidgetState extends State<GridViewWidget> {
   }
   Widget textWithBackground(String text){
     return Container(
-      color: Colors.blueAccent.withOpacity(0.4),
-      child: Text(text,style: TextStyle(color: Colors.white),),
+      padding: EdgeInsets.all(5),
+      color: Colors.blueAccent.withOpacity(0.8),
+      child: Text(text,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
     );
   }
   Future detailsView(String image,String title,String description){

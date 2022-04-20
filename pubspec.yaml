@@ -40,6 +40,12 @@ dependencies:
   flutter_appauth:
   oauth_dio:
   flutter_webview_plugin:
+  firebase_core:
+  firebase_database:
+  firebase_storage:
+  cloud_firestore:
+  image_picker:
+  intl:
 
 
 
@@ -69,8 +75,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  #assets:
-      #- assets/auth_config.json
+  assets:
+      - Images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

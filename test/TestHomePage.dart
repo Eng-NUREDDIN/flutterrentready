@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:rentready/DataManger/RealEstate_provider.dart';
-import 'package:rentready/HomePage.dart';
-import 'package:rentready/Widgets/ListViewWidget.dart';
+import 'package:rentready/Providers_DataManager/RealEstate_provider.dart';
+
+import 'package:rentready/Screens/HomePage.dart';
+import 'package:rentready/ViewModels/ListViewWidget.dart';
+import 'package:rentready/main.dart';
 
 void main(){
   setUp((){});
@@ -12,7 +14,7 @@ void main(){
       title: 'Rent Ready',
       home: ChangeNotifierProvider(
         create: (_)=>RealEstate(),
-        child: HomePage(),
+        child: MyApp(),
       ),
     );
   }
